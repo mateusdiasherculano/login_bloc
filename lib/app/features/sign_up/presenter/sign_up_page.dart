@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:login/app/features/sign_in/presenter/sign_in_controller.dart';
-import 'package:login/app/features/sign_in/presenter/sign_in_state.dart';
+import 'package:login/app/features/sign_up/presenter/sign_up_controller.dart';
+import 'package:login/app/features/sign_up/presenter/sign_up_state.dart';
 import 'package:login/components/common_widget.dart';
 
-class SignInPage extends StatelessWidget {
+class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final SignInController controller = Modular.get<SignInController>();
+    final SignUpController controller = Modular.get<SignUpController>();
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
 
@@ -16,27 +16,27 @@ class SignInPage extends StatelessWidget {
       create: (context) => controller,
       child: Scaffold(
         backgroundColor: Colors.cyan,
-        body: BlocConsumer<SignInController, LoginState>(
+        body: BlocConsumer<SignUpController, SignUpState>(
           listener: (context, state) {
-            if (state is ErrorState) {
+            if (state is SignUpErrorState) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
                   backgroundColor: Colors.red,
                 ),
               );
-            } else if (state is LoadedState) {
-              // Redirecionar o usuário para a HomePage
-              Modular.to.pushReplacementNamed('/home');
+            } else if (state is SignUpSuccessState) {
+              // Redirecionar o usuário para a tela de login
+              Modular.to.pushReplacementNamed('/login');
             }
           },
           builder: (context, state) {
-            if (state is LoadingState) {
+            if (state is SignUpLoadingState) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             } else {
-              return buildSignInForm(
+              return buildSignUpForm(
                   context, controller, emailController, passwordController);
             }
           },
@@ -45,9 +45,9 @@ class SignInPage extends StatelessWidget {
     );
   }
 
-  Widget buildSignInForm(
+  Widget buildSignUpForm(
       BuildContext context,
-      SignInController controller,
+      SignUpController controller,
       TextEditingController emailController,
       TextEditingController passwordController) {
     final size = MediaQuery.of(context).size;
@@ -94,7 +94,7 @@ class SignInPage extends StatelessWidget {
                       isSecret: true,
                     ),
 
-                    ///Botão de entrar
+                    ///Botão de cadastrar
                     SizedBox(
                       height: 50,
                       child: ElevatedButton(
@@ -104,28 +104,9 @@ class SignInPage extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          controller.sign(
+                          controller.signUp(
                               emailController.text, passwordController.text);
-                        },
-                        child: const Text(
-                          'Entrar',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
-                    ),
-                    const Divider(height: 25),
-
-                    ///Botão de Cadastrar
-                    SizedBox(
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                        ),
-                        onPressed: () {
-                          Modular.to.pushNamed('/signup');
+                          Modular.to.pushNamed('/sign');
                         },
                         child: const Text(
                           'Cadastrar',
